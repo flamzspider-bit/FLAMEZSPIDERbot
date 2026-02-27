@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLAMEZSPIDER | AI Interface</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #131314;
+            --sidebar-color: #1e1f20;
+            --text-color: #e3e3e3;
+            --accent-color: #4b90ff;
+            --user-msg-bg: #2b2c2d;
+            --input-bg: #1e1f20;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+
+        body { background-color: var(--bg-color); color: var(--text-color); display: flex; height: 100vh; overflow: hidden; }
+
+        /* Sidebar */
+        #sidebar {
+            width: 260px;
+            background: var(--sidebar-color);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            border-right: 1px solid #333;
+        }
+
+        .logo { font-weight: 600; font-size: 1.2rem; color: var(--accent-color); margin-bottom: 30px; letter-spacing: 1px; }
+
+        .new-chat-btn {
+            background: #333;
+            border: none;
+            color: white;
+            padding: 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .new-chat-btn:hover { background: #444; }
+
+        /* Main Chat Area */
+        #main-container { flex: 1; display: flex; flex-direction: column; position: relative; }
+
+        #chat-window {
+            flex: 1;
+            overflow-y: auto;
+            padding: 40px 15% 150px 15%;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* Message Bubbles */
+        .message { display: flex; gap: 15px; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .message.user { flex-direction: row-reverse; }
+
+        .bubble {
+            max-width: 80%;
+            padding: 12px 18px;
+            border-radius: 18px;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .user .bubble { background: var(--user-msg-bg); border-radius: 18px 18px 0 18px; }
+        .ai .bubble { background: transparent; }
+
+        /* Input Area */
+        .input-area {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70%;
+            background: var(--input-bg);
+            border-radius: 30px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            outline: none;
+            padding: 10px;
+            font-size: 1rem;
+        }
+
+        .send-btn {
+            background: var(--accent-color);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .typing { font-size: 0.8rem; color: #888; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+    <aside id="sidebar">
+        <div class="logo">FLAMEZSPIDER</div>
+        <button class="new-chat-btn" onclick="location.reload()">+ New Chat</button>
+    </aside>
+
+    <main id="main-container">
+        <div id="chat-window">
+            <div class="message ai">
+                <div class="bubble">Hello! I am <b>FLAMEZSPIDER</b>. How can I help you today?</div>
+            </div>
+        </div>
+
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="Type a message..." autocomplete="off">
+            <button class="send-btn" onclick="sendMessage()">Send</button>
+        </div>
+    </main>
+
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const userInput = document.getElementById('user-input');
+
+        // Handle Enter Key
+        userInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") sendMessage();
+        });
+
+        function sendMessage() {
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            // 1. Add User Message
+            appendMessage(text, 'user');
+            userInput.value = '';
+
+            // 2. Simulate AI Thinking
+            showTypingIndicator();
+
+            // 3. Simple Mock Logic (Replace with API Call)
+            setTimeout(() => {
+                removeTypingIndicator();
+                const response = getMockResponse(text);
+                appendMessage(response, 'ai');
+            }, 1000);
+        }
+
+        function appendMessage(text, sender) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${sender}`;
+            msgDiv.innerHTML = `<div class="bubble">${text}</div>`;
+            chatWindow.appendChild(msgDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const tip = document.createElement('div');
+            tip.id = 'typing-indicator';
+            tip.className = 'message ai typing';
+            tip.innerHTML = 'FlamezSpider is thinking...';
+            chatWindow.appendChild(tip);
+        }
+
+        function removeTypingIndicator() {
+            const tip = document.getElementById('typing-indicator');
+            if (tip) tip.remove();
+        }
+
+        function getMockResponse(input) {
+            const lowInput = input.toLowerCase();
+            if (lowInput.includes("hello")) return "Greetings! FlamezSpider at your service.";
+            if (lowInput.includes("name")) return "My name is FLAMEZSPIDER, your custom AI clone.";
+            if (lowInput.includes("time")) return "The time is " + new Date().toLocaleTimeString();
+            return "That's an interesting thought about '" + input + "'. Tell me more!";
+        }
+    </script>
+</body>
+</html>
